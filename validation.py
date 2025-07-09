@@ -27,9 +27,13 @@ class Validation:
 
 
     @staticmethod
-    def validate_quantity_available(available_quantity:int, requested_quantity:int):
-        if requested_quantity > available_quantity:
-            raise ValueError('Requested quantity cannot be greater than available quantity')
+    def compare_quantities(quantity:int, requested_quantity:int, msg):
+        if requested_quantity > quantity:
+            if msg == "available_quantity_vs_requested_quantities":
+                raise ValueError('Requested quantity cannot be greater than available quantity')
+            else:
+                raise ValueError('Requested quantity cannot greater than maximum quantity limit')
+
 
     @staticmethod
     def validate_user_menu_option(menu_option):
