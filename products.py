@@ -1,5 +1,6 @@
 import validation
 from validation import Validation
+from promotions import *
 
 class Product:
     def __init__(self, name, price, quantity):
@@ -12,6 +13,7 @@ class Product:
             self.price = price
             self.quantity = quantity
             self.active = True
+            self._promotion: None
         except Exception as e:
             print(e)
 
@@ -37,21 +39,39 @@ class Product:
         self.active = False
 
     def show(self):
-        print(f'{self.name}, Price: {self.price}, Quantity: {self.quantity}')
+        if self._promotion:
+            print(f'{self.name},'
+                  f' Price: {self.price},'
+                  f' Quantity: {self.quantity},'
+                  f' promotion:{self._promotion.name}'
+                 )
+        else:
+            print(f'{self.name},'
+                  f' Price: {self.price},'
+                  f' Quantity: {self.quantity},'
+                 )
+
 
     def buy(self, quantity):
         try:
+            __promotion = 0
             Validation.validate_quantity(quantity)
             if self.is_active():
+                if type(self._promotion) == ThirdOneFree:
+                    for i in range(2, quantity + 1):
+                        if i % 2 == 0:
+                            quantity += 1
                 if type(self) == Product:
                     Validation.compare_quantities(self.quantity,
-                                                           quantity,
-                                                           "available_quantity_vs_requested_quantities"
-                                                          )
+                                                  quantity,
+                                             "available_quantity_vs_requested_quantities"
+                                                 )
                     self.quantity = self.get_quantity() - quantity
                     self.check_and_deactivate_product_out_of_stock()
+                if self._promotion:
+                    __promotion += self._promotion.apply_promotion(self, quantity)
 
-                return quantity * self.price
+                return (quantity * self.price) - __promotion
             return 0
         except Exception as e:
             return e
@@ -59,6 +79,14 @@ class Product:
     def check_and_deactivate_product_out_of_stock(self):
         if self.quantity == 0:
             self.deactivate()
+
+    def set_promotion(self, promotion):
+        if not isinstance(promotion, Promotion):
+            raise TypeError("Expected a Promotion instance")
+        self._promotion = promotion
+
+    def get_promotion(self):
+        return self._promotion
 
 
 class NonStockedProduct(Product):
@@ -69,7 +97,16 @@ class NonStockedProduct(Product):
         self.quantity = 0
 
     def show(self):
-        print(f'{self.name}, Price: {self.price}')
+        if self._promotion:
+            print(f'{self.name}, '
+                  f'Price: {self.price}'
+                  f'Promotion: {self._promotion.name}'
+                  )
+        else:
+            print(f'{self.name}, '
+                  f'Price: {self.price}'
+                 )
+
 
 
 class LimitedProduct(Product):
@@ -82,11 +119,19 @@ class LimitedProduct(Product):
             print(e)
 
     def show(self):
-        print(f'{self.name}, Price: '
-              f'{self.price} Quantity: '
-              f'{self.quantity} Max Quantity: '
-              f'{self.maximum}'
-             )
+        if self._promotion:
+            print(f'{self.name}, Price: '
+                  f'{self.price} Quantity: '
+                  f'{self.quantity} Max Quantity: '
+                  f'{self.maximum}'
+                  f'Promotion: {self._promotion.name}'
+                 )
+        else:
+            print(f'{self.name}, Price: '
+                  f'{self.price} Quantity: '
+                  f'{self.quantity} Max Quantity: '
+                  f'{self.maximum}'
+                  )
 
     def buy(self, quantity):
         try:
@@ -106,6 +151,8 @@ class LimitedProduct(Product):
             return 0
         except Exception as e:
             return e
+
+
 
 
 

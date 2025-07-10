@@ -34,6 +34,15 @@ class Validation:
             else:
                 raise ValueError('Requested quantity cannot greater than maximum quantity limit')
 
+    @staticmethod
+    def is_valid_percentage(percentage):
+        if not isinstance(percentage, (int, float)):
+            raise ValueError('Percentage must be a integer or float')
+        if not 0 < percentage <= 100:
+            raise ValueError('Percentage must be between 0 and 100')
+
+
+
 
     @staticmethod
     def validate_user_menu_option(menu_option):
