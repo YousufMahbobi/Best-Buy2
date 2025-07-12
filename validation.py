@@ -32,7 +32,7 @@ class Validation:
             if msg == "available_quantity_vs_requested_quantities":
                 raise ValueError('Requested quantity cannot be greater than available quantity')
             else:
-                raise ValueError('Requested quantity cannot greater than maximum quantity limit')
+                raise ValueError('Requested quantity cannot be greater than maximum quantity limit')
 
     @staticmethod
     def is_valid_percentage(percentage):

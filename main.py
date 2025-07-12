@@ -84,14 +84,20 @@ def make_order(store):
                 if product.quantity >= product_amount:
                     shopping_list.append((product, product_amount))
                     total_order_price = store.order(shopping_list)
-                    print("Product added to list!\n")
+                    if total_order_price == 0:
+                        print("Error adding product!\n")
+                    else:
+                        print("Product added to list!\n")
                 else:
                     print("Error adding product!\n")
             else:
                 print("Error adding product!\n")
 
     print("********")
-    print(f"Order made! Total payment: ${total_order_price}")
+    if total_order_price != 0:
+        print(f"Order made! Total payment: ${total_order_price}")
+    else:
+        print(f"No Order made!")
 
 
 def process_menu_choice(user_menu_option, store):

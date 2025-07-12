@@ -57,15 +57,23 @@ class Product:
             __promotion = 0
             Validation.validate_quantity(quantity)
             if self.is_active():
+                if type(self) == LimitedProduct:
+                    Validation.compare_quantities(self.maximum,
+                                                  quantity,
+                                                  "maximum_quantity_limit_vs_requested_quantities"
+                                                  )
+
                 if type(self._promotion) == ThirdOneFree:
                     for i in range(2, quantity + 1):
                         if i % 2 == 0:
                             quantity += 1
-                if type(self) == Product:
+
+                if type(self) == Product or type(self) == LimitedProduct:
                     Validation.compare_quantities(self.quantity,
                                                   quantity,
                                              "available_quantity_vs_requested_quantities"
                                                  )
+
                     self.quantity = self.get_quantity() - quantity
                     self.check_and_deactivate_product_out_of_stock()
                 if self._promotion:
@@ -74,7 +82,7 @@ class Product:
                 return (quantity * self.price) - __promotion
             return 0
         except Exception as e:
-            return e
+            return 0
 
     def check_and_deactivate_product_out_of_stock(self):
         if self.quantity == 0:
@@ -133,24 +141,6 @@ class LimitedProduct(Product):
                   f'{self.maximum}'
                   )
 
-    def buy(self, quantity):
-        try:
-            Validation.validate_quantity(quantity)
-            if self.is_active():
-                Validation.compare_quantities(self.maximum,
-                                              quantity,
-                                              "requested_quantity_vs_max_quantity"
-                                             )
-                Validation.compare_quantities(self.quantity,
-                                              quantity,
-                                              "available_quantity_vs_requested_quantities"
-                                             )
-                self.quantity = self.get_quantity() - quantity
-                self.check_and_deactivate_product_out_of_stock()
-                return quantity * self.price
-            return 0
-        except Exception as e:
-            return e
 
 
 
